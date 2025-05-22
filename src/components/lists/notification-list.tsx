@@ -1,19 +1,14 @@
-import { Notification } from "@/types/notification.type"
-import { Bell, CheckCircle, AlertTriangle, Info, XCircle } from "lucide-react"
 
-const iconMap = {
-  info: <Info className="h-5 w-5 text-blue-600" />,
-  success: <CheckCircle className="h-5 w-5 text-green-600" />,
-  warning: <AlertTriangle className="h-5 w-5 text-yellow-600" />,
-  error: <XCircle className="h-5 w-5 text-red-600" />,
+export interface Notification {
+  id: string
+  title: string
+  message: string
+  timestamp: Date
+  read: boolean
+  type: NotificationType
 }
 
-const colorMap = {
-  info: "bg-blue-50 border-blue-300",
-  success: "bg-green-50 border-green-300",
-  warning: "bg-yellow-50 border-yellow-300",
-  error: "bg-red-50 border-red-300",
-}
+export type NotificationType = "info" | "success" | "warning" | "error"
 
 // Simulación de notificaciones
 const initialNotifications: Notification[] = [
