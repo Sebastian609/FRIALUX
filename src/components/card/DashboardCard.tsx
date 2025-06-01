@@ -7,7 +7,7 @@ interface DashboardCardProps {
   amount?: number
   currency?: string
   actionText?: string
-  color?: "orange" | "blue" | "purple" | "amber" | "rose"
+  color?: "white" | "blue" | "purple" | "amber" | "rose"
   onClick?: () => void
 }
 
@@ -17,15 +17,15 @@ export default function DashboardCard({
   amount = 250.0,
   currency = "S/.",
   actionText = "Ver más",
-  color = "orange",
+  color = "white",
   onClick = () => {},
 }: DashboardCardProps) {
   // Color mapping for different themes
   const colorMap = {
-    orange: {
-      bg: "bg-orange-400",
-      footer: "bg-orange-900/30",
-      iconBg: "bg-zinc-800",
+    white: {
+      bg: "bg-white",
+      footer: "bg-white",
+      iconBg: "bg-orange-500",
     },
     blue: {
       bg: "bg-blue-800",
@@ -52,7 +52,7 @@ export default function DashboardCard({
   const { bg, footer, iconBg } = colorMap[color]
 
   return (
-    <div className={`${bg} h-full gap-4 flex flex-col rounded-md overflow-hidden`}>
+    <div className={`${bg} shadow-sm h-full gap-4 flex flex-col rounded-md overflow-hidden`}>
       <div className="flex flex-row gap-4 p-4">
         <div>
           <div className={`${iconBg} aspect-square w-16 rounded-md flex justify-center items-center`}>
@@ -61,14 +61,14 @@ export default function DashboardCard({
         </div>
         <div>
           <div className="">
-            <p className="text-white">{title}</p>
+            <p className="text-orange-600">{title}</p>
           </div>
-          <span className="text-[2rem] text-white">
+          <span className="text-[2rem] text-zinc-900 font-bold">
             {currency} {amount}
           </span>
         </div>
       </div>
-      <button onClick={onClick} className="text-white text-left hover:bg-black/10 transition-colors w-full">
+      <button onClick={onClick} className="text-zinc-400 border-t text-left transition-colors w-full">
         <div className={`${footer} w-full p-4`}>{actionText}</div>
       </button>
     </div>

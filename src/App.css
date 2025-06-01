@@ -1,29 +1,29 @@
 @import "tailwindcss";
 /* Estilo general de la barra */
 ::-webkit-scrollbar {
-    width: 8px; /* Grosor */
+    width: 2px; /* Grosor */
   }
   
   /* Fondo de la barra (track) */
   ::-webkit-scrollbar-track {
-    background: #1e1e1e; /* Un gris oscuro */
+    background: #f1f1f1; /* Un gris oscuro */
     border-radius: 4px;
   }
   
   /* Thumb (parte que se mueve) */
   ::-webkit-scrollbar-thumb {
-    background: #3a3a3a; /* Gris más oscuro */
+    background: #f0f0f0; /* Gris más oscuro */
     border-radius: 4px;
   }
   
   /* Cambio de color al pasar el mouse */
   ::-webkit-scrollbar-thumb:hover {
-    background: #555; /* Un poco más claro al hacer hover */
+    background: #e4e4e4; /* Un poco más claro al hacer hover */
   }
   
   /* Soporte para Firefox */
   * {
-    scrollbar-color: #3a3a3a #1e1e1e;
+    scrollbar-color: #ebe9e9 #fdfdfd;
     scrollbar-width: thin;
   }
   

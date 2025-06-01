@@ -14,9 +14,9 @@ const modules: Module[] = Array.from({ length: 30 }, (_, i) => ({
 export default function Dashboard() {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-      <DashboardCard color="orange" amount={3} currency="" icon={Thermometer} title="Módulos Activos" />
-      <DashboardCard color="orange" amount={10} currency="" icon={BellIcon} title="Notificaciones" />
-      <DashboardCard color="orange" amount={2} currency="" icon={User2Icon} title="Usuarios Activos" />
+      <DashboardCard color="white" amount={3} currency="" icon={Thermometer} title="Módulos Activos" />
+      <DashboardCard color="white" amount={10} currency="" icon={BellIcon} title="Notificaciones" />
+      <DashboardCard color="white" amount={2} currency="" icon={User2Icon} title="Usuarios Activos" />
 
       <div className="col-span-2 h-[calc(100vh-16rem)] min-h-[300px]">
         <div className="grid grid-cols-1 gap-4 h-full">

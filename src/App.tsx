@@ -9,7 +9,7 @@ function App() {
 
   return (
     <HashRouter>
-    <div className="bg-zinc-900 min-h-screen flex max-w-screen">
+    <div className="bg-zinc-100 min-h-screen flex max-w-screen">
       <div className="sticky top-0 h-screen p-4">
         <AppSidebar />
       </div>
