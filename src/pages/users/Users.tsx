@@ -1,97 +1,52 @@
-"use client"
+import LoadingUsers from "./LoadingUsers";
+import ErrorFetchingUsers from "./ErrorFetchingUsers";
+import { useUserStore } from "@/stores/user-store";
+import { useUsers } from "@/hooks/user-hooks";
 
-import { useState } from "react"
-import { useQuery } from "@tanstack/react-query"
-import { fetch } from "@tauri-apps/plugin-http"
-import LoadingUsers from "./LoadingUsers"
-import ErrorFetchingUsers from "./ErrorFetchingUsers"
-import { PlusIcon } from "lucide-react"
-import SaveUser from "./SaveUser"
-
-type User = {
-  id: number
-  name: string
-  firstLastname: string
-  secondLastname: string
-  username: string
-  isActive: boolean
-  roleId: number
-  role:{
-    name:string
-  }
-  createdAt: string
-  updatedAt: string
-}
-
-type ApiResponse = {
-  response: {
-    users: User[]
-    count: number
-  }
-  pagination: {
-    currentPage: number
-    itemsPerPage: number
-    totalItems: number
-    totalPages: number
-    hasNextPage: boolean
-    hasPreviousPage: boolean
-  }
-}
-
-const fetchUsers = async (page: number, itemsPerPage: number): Promise<ApiResponse> => {
-  const response = await fetch(`http://localhost:2221/api/users?page=${page}&items=${itemsPerPage}`)
-  if (!response.ok) {
-    throw new Error("Error al cargar usuarios")
-  }
-  return response.json()
-}
+import SaveUser from "./SaveUser";
 
 function UsersTable() {
-  const [page, setPage] = useState(1)
-  const [itemsPerPage, setItemsPerPage] = useState(10)
-
-  const { data, isLoading, isError, error, isFetching } = useQuery<ApiResponse>({
-    queryKey: ["users", page, itemsPerPage],
-    queryFn: () => fetchUsers(page, itemsPerPage),
-    placeholderData: (previousData) => previousData,
-  })
+  const { page, setPage, itemsPerPage, setItemsPerPage } = useUserStore();
+  const { data, isLoading, isError, error, isFetching } = useUsers();
 
   if (isLoading) {
-    return (
-     <LoadingUsers />
-    )
+    return <LoadingUsers />;
   }
 
   if (isError) {
-    return (
-      <ErrorFetchingUsers error={error.message} />
-    )
+    return <ErrorFetchingUsers error={error.message} />;
   }
 
-  const { users } = data?.response || { users: [] }
-  const pagination = data?.pagination
+  const { users } = data?.response || { users: [] };
+  const pagination = data?.pagination;
 
   return (
     <div className="min-h-screen">
       <div className="mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Gestión de Usuarios</h1>
-          <p className="text-gray-600">Administra y visualiza todos los usuarios del sistema</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Gestión de Usuarios
+          </h1>
+          <p className="text-gray-600">
+            Administra y visualiza todos los usuarios del sistema
+          </p>
         </div>
 
         {/* Controls Card */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="flex items-center gap-3">
-              <SaveUser />
-              <label className="text-sm font-medium text-gray-700">Mostrar:</label>
+              <SaveUser/>
+              <label className="text-sm font-medium text-gray-700">
+                Mostrar:
+              </label>
               <select
                 className="bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                 value={itemsPerPage}
                 onChange={(e) => {
-                  setItemsPerPage(Number(e.target.value))
-                  setPage(1)
+                  setItemsPerPage(Number(e.target.value));
+                  setPage(1);
                 }}
               >
                 {[3, 5, 10, 20].map((size) => (
@@ -100,7 +55,9 @@ function UsersTable() {
                   </option>
                 ))}
               </select>
-              <span className="text-sm text-gray-600">registros por página</span>
+              <span className="text-sm text-gray-600">
+                registros por página
+              </span>
             </div>
 
             <div className="flex items-center gap-2 text-sm text-gray-600">
@@ -150,7 +107,9 @@ function UsersTable() {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                          <span className="text-xs font-medium text-blue-600">{user.id}</span>
+                          <span className="text-xs font-medium text-blue-600">
+                            {user.id}
+                          </span>
                         </div>
                       </div>
                     </td>
@@ -172,11 +131,15 @@ function UsersTable() {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div
                         className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
-                          user.isActive ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+                          user.isActive
+                            ? "bg-green-100 text-green-800"
+                            : "bg-red-100 text-red-800"
                         }`}
                       >
                         <div
-                          className={`w-2 h-2 rounded-full mr-2 ${user.isActive ? "bg-green-400" : "bg-red-400"}`}
+                          className={`w-2 h-2 rounded-full mr-2 ${
+                            user.isActive ? "bg-green-400" : "bg-red-400"
+                          }`}
                         ></div>
                         {user.isActive ? "Activo" : "Inactivo"}
                       </div>
@@ -188,8 +151,10 @@ function UsersTable() {
                         day: "numeric",
                       })}
                     </td>
-                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                      <button className="bg-zinc-700 px-3  py-2 rounded-sm text-white">Editar</button>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                      <button className="bg-zinc-700 px-3  py-2 rounded-sm text-white">
+                        Editar
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -197,11 +162,15 @@ function UsersTable() {
             </table>
           </div>
 
-       
           {users.length === 0 && (
             <div className="text-center py-12">
               <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg
+                  className="w-8 h-8 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -210,8 +179,12 @@ function UsersTable() {
                   />
                 </svg>
               </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No hay usuarios</h3>
-              <p className="text-gray-500">No se encontraron usuarios en el sistema.</p>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                No hay usuarios
+              </h3>
+              <p className="text-gray-500">
+                No se encontraron usuarios en el sistema.
+              </p>
             </div>
           )}
         </div>
@@ -221,8 +194,15 @@ function UsersTable() {
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 px-6 py-4 mt-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div className="text-sm text-gray-600">
-                Mostrando <span className="font-medium text-gray-900">{users.length}</span> de{" "}
-                <span className="font-medium text-gray-900">{pagination?.totalItems}</span> registros
+                Mostrando{" "}
+                <span className="font-medium text-gray-900">
+                  {users.length}
+                </span>{" "}
+                de{" "}
+                <span className="font-medium text-gray-900">
+                  {pagination?.totalItems}
+                </span>{" "}
+                registros
               </div>
 
               <div className="flex items-center gap-2">
@@ -232,11 +212,21 @@ function UsersTable() {
                       ? "bg-gray-50 text-gray-400 border-gray-200 cursor-not-allowed"
                       : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   }`}
-                  onClick={() => setPage((p) => p - 1)}
+                  onClick={() => setPage(page - 1)}
                   disabled={!pagination?.hasPreviousPage || isFetching}
                 >
-                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  <svg
+                    className="w-4 h-4 mr-2"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 19l-7-7 7-7"
+                    />
                   </svg>
                   Anterior
                 </button>
@@ -244,9 +234,14 @@ function UsersTable() {
                 <div className="flex items-center px-4 py-2 text-sm text-gray-700 bg-gray-50 rounded-lg border border-gray-200">
                   Página{" "}
                   <span className="font-medium mx-1">
-                    {pagination?.currentPage !== undefined ? pagination.currentPage + 1 : 1}
+                    {pagination?.currentPage !== undefined
+                      ? pagination.currentPage + 1
+                      : 1}
                   </span>
-                  de <span className="font-medium ml-1">{pagination?.totalPages ?? 1}</span>
+                  de{" "}
+                  <span className="font-medium ml-1">
+                    {pagination?.totalPages ?? 1}
+                  </span>
                 </div>
 
                 <button
@@ -255,12 +250,22 @@ function UsersTable() {
                       ? "bg-gray-50 text-gray-400 border-gray-200 cursor-not-allowed"
                       : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   }`}
-                  onClick={() => setPage((p) => p + 1)}
+                  onClick={() => setPage(page + 1)}
                   disabled={!pagination?.hasNextPage || isFetching}
                 >
                   Siguiente
-                  <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  <svg
+                    className="w-4 h-4 ml-2"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5l7 7-7 7"
+                    />
                   </svg>
                 </button>
               </div>
@@ -273,13 +278,15 @@ function UsersTable() {
           <div className="fixed inset-0 bg-black bg-opacity-25 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg shadow-xl p-6 flex items-center gap-3">
               <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-              <span className="text-gray-700 font-medium">Actualizando datos...</span>
+              <span className="text-gray-700 font-medium">
+                Actualizando datos...
+              </span>
             </div>
           </div>
         )}
       </div>
     </div>
-  )
+  );
 }
 
-export default UsersTable
+export default UsersTable;
