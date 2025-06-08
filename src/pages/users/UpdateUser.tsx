@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { useUserStore } from "@/stores/user-store";
 import { useFetchUserById } from "@/hooks/user.get-by-id-hook";
@@ -22,6 +22,12 @@ export default function UpdateUser() {
     }
   );
 
+  useEffect(() => {
+    if (data) {
+      setUpdateData(data);
+    }
+  }, [data]);
+
 
   const handleInputChange = <K extends keyof UpdateUserDTO>(
     key: K,
@@ -42,7 +48,7 @@ export default function UpdateUser() {
 
     await toast.promise(mutateAsync(updateData), {
       loading: "Actualizando...",
-      success: "Usuario Actualizado",
+      success: "Usuario actualizado",
       error: (err) => `Error: ${err.message}`,
     });
   };
