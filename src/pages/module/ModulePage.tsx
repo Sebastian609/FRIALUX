@@ -1,5 +1,5 @@
 "use client"
-import { getMeasurementIcon } from "@/components/card/ModuleCard"
+import { getMeasurementIcon } from "@/ui/card/ModuleCard"
 import type { Lecture } from "@/types/lecture.type"
 import type { Module } from "@/types/module.type"
 import { useParams } from "react-router-dom"

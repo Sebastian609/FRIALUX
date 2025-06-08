@@ -3,13 +3,16 @@ import type React from "react";
 import { PlusIcon, X } from "lucide-react";
 import { useUserStore } from "@/stores/user-store";
 import { useCreateUser } from "@/hooks/user.save-hook";
-
+import { CustomToast } from "@/ui/modal/custom-toast";
+import { useState } from "react";
+import toast from "react-hot-toast";
 
 export default function SaveUser() {
   const { isModalOpen, closeModal, setFormData, openModal, formData } =
     useUserStore();
+  const { mutate } = useCreateUser();
 
-  const save = useCreateUser();
+  
 
   const handleInputChange = (field: string, value: string | number) => {
     setFormData({
@@ -17,14 +20,28 @@ export default function SaveUser() {
       [field]: value,
     });
   };
-  const handleSubmit = (e: React.FormEvent) => {
+   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
-    save.mutate(formData);
+    mutate(formData, {
+      onSuccess: () => {
+       toast.success("Usuario creado")
+        closeModal(); // Cierra el modal después de éxito
+      },
+      onError: (err: any) => {
+   
+        toast.error(err.message)
+      },
+    });
   };
+
+
 
   return (
     <div>
+
+   
+      
+
       {/* Botón para abrir modal */}
       <button
         onClick={openModal}

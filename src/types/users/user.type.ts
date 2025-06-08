@@ -12,3 +12,17 @@ export type User = {
   createdAt: string
   updatedAt: string
 }
+
+export type UpdateUserDTO = {
+    name: string
+    firstLastname: string
+    secondLastname: string
+    username: string
+    isActive: boolean
+    roleId: number
+}
+
+export type UpdatePasswordDTO = {
+    password: string,
+    id: number
+}

@@ -12,7 +12,8 @@ export const createUser = async (userData:SaveUserTemplate):Promise<User>=> {
   })
 
   if (!response.ok) {
-    throw new Error("Error al crear el usuario")
+    const errorData = await response.json();
+    throw new Error(errorData.message || "Error desconocido al crear el usuario");
   }
 
   return response.json()

@@ -1,6 +1,6 @@
-import DashboardCard from "@/components/card/DashboardCard"
-import ModuleList from "@/components/lists/ModuleList"
-import { NotificationList } from "@/components/lists/notification-list";
+import DashboardCard from "@/ui/card/DashboardCard"
+import ModuleList from "@/ui/lists/ModuleList"
+import { NotificationList } from "@/ui/lists/notification-list";
 import { Module } from "@/types/module.type"
 import { User2Icon, Thermometer, BellIcon } from "lucide-react"
 

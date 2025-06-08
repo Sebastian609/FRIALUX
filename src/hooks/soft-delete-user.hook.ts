@@ -1,12 +1,10 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createUser } from "@/services/user/save";
-import { SaveUserTemplate } from "@/types/users/saveUser.type";
+import { softDeleteUserService } from "@/services/user/soft-delete-user.service";
 
-export function useCreateUser() {
+export function useSoftDeleteUser() {
   const queryClient = useQueryClient();
-
   return useMutation({
-    mutationFn: (formData: SaveUserTemplate) => createUser(formData),
+    mutationFn: (userId: number) => softDeleteUserService(userId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
     },

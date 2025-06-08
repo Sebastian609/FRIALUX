@@ -16,6 +16,8 @@ interface User {
 
 interface UserStore {
   users: User[];
+  userId: number | null;
+  setUserId: (id: number) => void;
   setUsers: (users: User[]) => void;
   isModalOpen: boolean;
   openModal: () => void;
@@ -24,8 +26,17 @@ interface UserStore {
   setPage: (page: number) => void;
   itemsPerPage: number;
   setItemsPerPage: (items: number) => void;
-  formData: SaveUserTemplate,
-  setFormData: (user:SaveUserTemplate) => void
+  formData: SaveUserTemplate;
+  setFormData: (user: SaveUserTemplate) => void;
+  isUpdateOpen: boolean;
+  openUpdate: () => void;
+  closeUpdate: () => void;
+  deleteOpen: boolean;
+  openDelete: () => void;
+  closeDelete: () => void;
+  updatePassword: boolean;
+  openUpdatePassword: () => void;
+  closeUpdatePassword: () => void;
 }
 
 export const useUserStore = create<UserStore>((set) => ({
@@ -39,12 +50,23 @@ export const useUserStore = create<UserStore>((set) => ({
   itemsPerPage: 10,
   setItemsPerPage: (items) => set({ itemsPerPage: items }),
   formData: {
-     name: "",
+    name: "",
     username: "",
     firstLastname: "",
     secondLastname: "",
     password: "",
     roleId: 1,
   },
-  setFormData: (user) => set({formData: user}) 
+  setFormData: (user) => set({ formData: user }),
+  isUpdateOpen: false,
+  openUpdate: () => set({ isUpdateOpen: true }),
+  closeUpdate: () => set({ isUpdateOpen: false }),
+  deleteOpen: false,
+  openDelete: () => set({ deleteOpen: true }),
+  closeDelete: () => set({ deleteOpen: false }),
+  userId: null,
+  setUserId: (id: number) => set({ userId: id }),
+  updatePassword: false,
+  openUpdatePassword: () => set({ updatePassword: true }),
+closeUpdatePassword: () => set({ updatePassword: false }),
 }));

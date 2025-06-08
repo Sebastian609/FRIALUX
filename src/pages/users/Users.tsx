@@ -4,12 +4,44 @@ import { useUserStore } from "@/stores/user-store";
 import { useUsers } from "@/hooks/user-hooks";
 
 import SaveUser from "./SaveUser";
+import UpdateUser from "./UpdateUser";
+import CustomDropDown from "@/ui/dropdowns/custom-dropdown";
+import DeleteUser from "@/components/users/delete-user";
+import UpdateUserPassword from "@/components/users/update-user-password";
+
 
 function UsersTable() {
-  const { page, setPage, itemsPerPage, setItemsPerPage } = useUserStore();
-  const { data, isLoading, isError, error, isFetching } = useUsers();
+  const {
+    page,
+    setPage,
+    itemsPerPage,
+    setItemsPerPage,
+    openUpdate,
+    openDelete,
+    openUpdatePassword,
+    setUserId,
+  } = useUserStore();
+  const { data, isError, error, isFetching } = useUsers();
+  const { users } = data?.response || { users: [] };
+  const pagination = data?.pagination;
 
-  if (isLoading) {
+
+  const showDelete = (id: number) => {
+    setUserId(id);
+    openDelete();
+  };
+
+  const getUser = async (id: number) => {
+    setUserId(id);
+    openUpdate();
+  };
+
+  const showUpdatePassword = async (id: number) => {
+    setUserId(id);
+    openUpdatePassword();
+  };
+
+  if (isFetching) {
     return <LoadingUsers />;
   }
 
@@ -17,11 +49,13 @@ function UsersTable() {
     return <ErrorFetchingUsers error={error.message} />;
   }
 
-  const { users } = data?.response || { users: [] };
-  const pagination = data?.pagination;
-
   return (
     <div className="min-h-screen">
+      <DeleteUser />
+      <UpdateUser />
+
+      <UpdateUserPassword />
+
       <div className="mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -37,7 +71,8 @@ function UsersTable() {
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="flex items-center gap-3">
-              <SaveUser/>
+              <SaveUser />
+
               <label className="text-sm font-medium text-gray-700">
                 Mostrar:
               </label>
@@ -152,9 +187,20 @@ function UsersTable() {
                       })}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                      <button className="bg-zinc-700 px-3  py-2 rounded-sm text-white">
-                        Editar
-                      </button>
+                      <CustomDropDown
+                        text="Opciones"
+                        options={[
+                          { label: "Editar", action: () => getUser(user.id) },
+                          {
+                            label: "Eliminar",
+                            action: () => showDelete(user.id),
+                          },
+                          {
+                            label: "Cambiar contraseña",
+                            action: () => showUpdatePassword(user.id),
+                          },
+                        ]}
+                      />
                     </td>
                   </tr>
                 ))}
@@ -273,17 +319,7 @@ function UsersTable() {
           </div>
         )}
 
-        {/* Loading Overlay */}
-        {isFetching && (
-          <div className="fixed inset-0 bg-black bg-opacity-25 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-xl p-6 flex items-center gap-3">
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-              <span className="text-gray-700 font-medium">
-                Actualizando datos...
-              </span>
-            </div>
-          </div>
-        )}
+        
       </div>
     </div>
   );

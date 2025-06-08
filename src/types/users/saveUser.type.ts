@@ -1,5 +1,5 @@
 export type SaveUserTemplate = {
-     name: string,
+    name: string,
     username: string,
     firstLastname: string,
     secondLastname: string,
