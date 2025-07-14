@@ -1,17 +1,18 @@
+import { usePaginateModules } from "@/hooks/modules/paginate-modules.hook";
 import DashboardCard from "@/ui/card/DashboardCard"
 import ModuleList from "@/ui/lists/ModuleList"
 import { NotificationList } from "@/ui/lists/notification-list";
-import { Module } from "@/types/module.type"
 import { User2Icon, Thermometer, BellIcon } from "lucide-react"
 
 
-const modules: Module[] = Array.from({ length: 30 }, (_, i) => ({
-  id: i + 1,
-  name: `Central punto ${i + 1}`,
-  webSocketCode: `CP${i + 1}`
-}));
-
 export default function Dashboard() {
+
+  const { data: getModules } = usePaginateModules()
+
+  if (!getModules) {
+    return <div>Cargando módulos...</div>
+  }
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
       <DashboardCard color="white" amount={3} currency="" icon={Thermometer} title="Módulos Activos" />
@@ -22,7 +23,7 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 gap-4 h-full">
          
           <div className="col-span-1   overflow-auto h-full rounded-lg bg-card text-card-foreground shadow-sm">
-            <ModuleList  modules={modules}/>
+            <ModuleList  modules={getModules.response.data}/>
           </div>
           
         </div>

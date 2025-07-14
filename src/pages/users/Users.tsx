@@ -1,13 +1,14 @@
-import LoadingUsers from "./LoadingUsers";
-import ErrorFetchingUsers from "./ErrorFetchingUsers";
 import { useUserStore } from "@/stores/user-store";
-import { useUsers } from "@/hooks/user-hooks";
+import { useUsers } from "@/hooks/users/user-hooks";
 
 import SaveUser from "./SaveUser";
 import UpdateUser from "./UpdateUser";
 import CustomDropDown from "@/ui/dropdowns/custom-dropdown";
 import DeleteUser from "@/components/users/delete-user";
 import UpdateUserPassword from "@/components/users/update-user-password";
+import Loading from "./LoadingUsers";
+import ErrorFetching from "./ErrorFetchingUsers";
+import { useCallback } from "react";
 
 
 function UsersTable() {
@@ -21,36 +22,38 @@ function UsersTable() {
     openUpdatePassword,
     setUserId,
   } = useUserStore();
+
   const { data, isError, error, isFetching } = useUsers();
-  const { users } = data?.response || { users: [] };
+
   const pagination = data?.pagination;
 
 
-  const showDelete = (id: number) => {
+    const memoizedShowDelete = useCallback((id: number) => {
     setUserId(id);
     openDelete();
-  };
+  }, [setUserId, openDelete]); // Dependencias: setters de estado son estables, pero inclúyelos
 
-  const getUser = async (id: number) => {
+  const memoizedGetUser = useCallback(async (id: number) => {
     setUserId(id);
     openUpdate();
-  };
+  }, [setUserId, openUpdate]);
 
-  const showUpdatePassword = async (id: number) => {
+  const memoizedShowUpdatePassword = useCallback(async (id: number) => {
     setUserId(id);
     openUpdatePassword();
-  };
+  }, [setUserId, openUpdatePassword]);
+
 
   if (isFetching) {
-    return <LoadingUsers />;
+    return <Loading />;
   }
 
   if (isError) {
-    return <ErrorFetchingUsers error={error.message} />;
+    return <ErrorFetching error={error.message} />;
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="h-screen">
       <DeleteUser />
       <UpdateUser />
 
@@ -68,7 +71,7 @@ function UsersTable() {
         </div>
 
         {/* Controls Card */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+        <div className="bg-white rounded-xl  shadow-sm border border-gray-200 p-6 mb-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="flex items-center gap-3">
               <SaveUser />
@@ -77,7 +80,7 @@ function UsersTable() {
                 Mostrar:
               </label>
               <select
-                className="bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                className="bg-white border  border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                 value={itemsPerPage}
                 onChange={(e) => {
                   setItemsPerPage(Number(e.target.value));
@@ -103,7 +106,7 @@ function UsersTable() {
         </div>
 
         {/* Table Card */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden ">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
@@ -132,7 +135,8 @@ function UsersTable() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {users.map((user, index) => (
+                {data?.response.users.map((user, index) => 
+                { return (
                   <tr
                     key={user.id}
                     className={`hover:bg-gray-50 transition-colors duration-150 ${
@@ -188,27 +192,20 @@ function UsersTable() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                       <CustomDropDown
-                        text="Opciones"
-                        options={[
-                          { label: "Editar", action: () => getUser(user.id) },
-                          {
-                            label: "Eliminar",
-                            action: () => showDelete(user.id),
-                          },
-                          {
-                            label: "Cambiar contraseña",
-                            action: () => showUpdatePassword(user.id),
-                          },
-                        ]}
-                      />
+                    text="Opciones"
+                    userId={user.id} // <-- Pasa el ID del usuario
+                    onEdit={memoizedGetUser}         // <-- Pasa las funciones memoizadas
+                    onDelete={memoizedShowDelete}
+                    onChangePassword={memoizedShowUpdatePassword}
+                  />
                     </td>
                   </tr>
-                ))}
+                )})}
               </tbody>
             </table>
           </div>
 
-          {users.length === 0 && (
+          {data?.response.users.length === 0 && (
             <div className="text-center py-12">
               <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <svg
@@ -236,13 +233,13 @@ function UsersTable() {
         </div>
 
         {/* Pagination */}
-        {users.length > 0 && (
+        {data && data?.response.users.length > 0 && (
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 px-6 py-4 mt-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div className="text-sm text-gray-600">
                 Mostrando{" "}
                 <span className="font-medium text-gray-900">
-                  {users.length}
+                  {data.response.users.length}
                 </span>{" "}
                 de{" "}
                 <span className="font-medium text-gray-900">

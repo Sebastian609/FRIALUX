@@ -1,4 +1,4 @@
-import { useUpdatePasswordUser } from "@/hooks/update-password-user.hook";
+import { useUpdatePasswordUser } from "@/hooks/users/update-password-user.hook";
 import { useUserStore } from "@/stores/user-store";
 import { UpdatePasswordDTO } from "@/types/users/user.type";
 import { Dialog, Transition } from "@headlessui/react";

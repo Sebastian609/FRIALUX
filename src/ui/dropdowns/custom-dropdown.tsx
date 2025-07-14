@@ -1,47 +1,69 @@
-import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
-import { ChevronDownIcon } from "@heroicons/react/20/solid";
-
-export interface CustomDropdownOptions {
-  label: string;
-  action?: (value?: any) => any ;
-}
+// src/ui/dropdowns/custom-dropdown.tsx
+import { useState, useRef, useEffect } from 'react';
 
 interface CustomDropDownProps {
   text: string;
-  options: CustomDropdownOptions[];
+  userId: number;
+  onEdit: (id: number) => void;
+  onDelete: (id: number) => void;
+  onChangePassword: (id: number) => void;
 }
 
-export default function CustomDropDown({ options, text }: CustomDropDownProps) {
-  return (
-    <Menu as="div" className="relative inline-block text-left">
-      <div>
-        <MenuButton className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset hover:bg-gray-50">
-          {text}
-          <ChevronDownIcon
-            aria-hidden="true"
-            className="-mr-1 size-5 text-gray-400"
-          />
-        </MenuButton>
-      </div>
+function CustomDropDown({ text, userId, onEdit, onDelete, onChangePassword }: CustomDropDownProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
-      <MenuItems
-        transition
-        className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 transition focus:outline-hidden data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
+  const options = [
+    { label: "Editar", action: () => onEdit(userId) },
+    { label: "Eliminar", action: () => onDelete(userId) },
+    { label: "Cambiar contraseña", action: () => onChangePassword(userId) },
+  ];
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleOptionClick = (action: () => void) => {
+    action();
+    setIsOpen(false);
+  };
+
+  return (
+    <div className="relative inline-block text-left" ref={dropdownRef}>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
       >
-        <div className="py-1">
-          {options.map((option: CustomDropdownOptions,index) => (
-            <MenuItem  key={index}> 
-              <a
-          
-                onClick={() => option.action?.()}
-                className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:text-gray-900 data-focus:outline-hidden"
+        {text}
+        <svg className="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+        </svg>
+      </button>
+
+      {isOpen && (
+        <div className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10">
+          <div className="py-1">
+            {options.map((option) => (
+              <button
+                key={option.label}
+                onClick={() => handleOptionClick(option.action)}
+                className="group flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
               >
                 {option.label}
-              </a>
-            </MenuItem>
-          ))}
+              </button>
+            ))}
+          </div>
         </div>
-      </MenuItems>
-    </Menu>
+      )}
+    </div>
   );
 }
+
+export default CustomDropDown;

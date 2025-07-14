@@ -2,7 +2,7 @@ import type React from "react";
 
 import { PlusIcon, X } from "lucide-react";
 import { useUserStore } from "@/stores/user-store";
-import { useCreateUser } from "@/hooks/user.save-hook";
+import { useCreateUser } from "@/hooks/users/user.save-hook";
 import toast from "react-hot-toast";
 
 export default function SaveUser() {

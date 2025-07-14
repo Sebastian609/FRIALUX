@@ -1,8 +1,9 @@
+import { API_BASE_URL } from "@/config/config";
 import { UpdatePasswordDTO, User } from "@/types/users/user.type";
 import { fetch } from "@tauri-apps/plugin-http";
 
 export const updatePasswordService = async (data:UpdatePasswordDTO): Promise<User> => {
-  const response = await fetch(`http://localhost:2221/api/users/update-password`, {
+  const response = await fetch(`${API_BASE_URL}users/update-password`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

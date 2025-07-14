@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { useUserStore } from "@/stores/user-store";
-import { useFetchUserById } from "@/hooks/user.get-by-id-hook";
+import { useFetchUserById } from "@/hooks/users/user.get-by-id-hook";
 import { UpdateUserDTO } from "@/types/users/user.type";
-import { useUpdateUser } from "@/hooks/update-user.hookt";
+import { useUpdateUser } from "@/hooks/users/update-user.hookt";
 import toast from "react-hot-toast";
 
 export default function UpdateUser() {

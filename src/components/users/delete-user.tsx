@@ -1,4 +1,4 @@
-import { useSoftDeleteUser } from "@/hooks/soft-delete-user.hook";
+import { useSoftDeleteUser } from "@/hooks/users/soft-delete-user.hook";
 import { useUserStore } from "@/stores/user-store";
 import CustomModal from "@/ui/modal/custom-modal";
 import toast from "react-hot-toast";

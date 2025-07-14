@@ -1,4 +1,4 @@
-import type { Module } from "@/types/module.type"
+import type { Module } from "@/types/modules/module.type"
 import ModuleCard from "../card/ModuleCard"
 
 export interface ModuleListProps {

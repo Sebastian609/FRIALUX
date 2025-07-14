@@ -12,6 +12,9 @@ import {
   requestPermission,
   sendNotification
 } from '@tauri-apps/plugin-notification'
+import { useEffect } from "react";
+import { io } from "socket.io-client";
+import { WS_BASE_URL } from "@/config/config";
 
 async function checkPermission() {
   try {
@@ -25,18 +28,19 @@ async function checkPermission() {
   }
 }
 
-export async function enqueueNotification(title:any, body:any) {
+export async function enqueueNotification( body:any) {
   if (!(await checkPermission())) {
     alert("Permission denied")
     return
   }
+  let title = "ALERTA 🚨"
   sendNotification({ title, body,sound:"./../../public/sound.mp3"})
 }
 
 
 const sections = [
   { icon: LayoutDashboardIcon, key: "dashboard", path: "/" },
-  { icon: ThermometerSnowflake, key: "Módulos", path: "/finance" },
+  { icon: ThermometerSnowflake, key: "Módulos", path: "/modules" },
   { icon: Users2Icon, key: "users", path: "/users" },
   { icon: BellIcon, key: "notifications", path: "/d" },
   { icon: CogIcon, key: "settings", path: "/settings" },
@@ -44,11 +48,26 @@ const sections = [
 
 export function AppSidebar() {
     const notify = async () => {
-  await enqueueNotification("HOLA","hola desde frialux")
+  await enqueueNotification("hola desde frialux")
+
+  
 };
 
+
+  useEffect(() => {
+    const socket = io(WS_BASE_URL); // Cambia la URL según tu backend
+
+    socket.on("notifications", (data: { message: string}) => {
+      enqueueNotification(data.message);
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
   return (
-    <div className="h-full flex flex-col gap-4">
+    <div className="h-full flex flex-col gap-4 z-500">
       <div className="aspect-square rounded-md overflow-hidden bg-orange-400 hover:scale-90 transition-all hover:shadow-md hover:shadow-orange-400 hover:bg-orange-700 flex items-center justify-center">
         <h6 onClick={()=>notify()} className="text-white font-bold">FRIALUX</h6>
       </div>

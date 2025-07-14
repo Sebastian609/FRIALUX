@@ -1,9 +1,10 @@
+import { API_BASE_URL } from "@/config/config"
 import { SaveUserTemplate } from "@/types/users/saveUser.type"
 import { User } from "@/types/users/user.type"
 import { fetch } from "@tauri-apps/plugin-http"
 
 export const createUser = async (userData:SaveUserTemplate):Promise<User>=> {
-  const response = await fetch("http://localhost:2221/api/users", {
+  const response = await fetch(`${API_BASE_URL}users`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

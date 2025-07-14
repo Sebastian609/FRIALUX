@@ -56,6 +56,8 @@ export function CustomToast({ open, message, title, type = 'info', onClose }: Cu
       enter="transition ease-out duration-500"
       enterFrom="opacity-0 translate-y-8"
       enterTo="opacity-100 translate-y-0"
+      as="div"
+    
       leave="transition ease-in duration-300"
       leaveFrom="opacity-100 translate-y-0"
       leaveTo="opacity-0 translate-y-8"

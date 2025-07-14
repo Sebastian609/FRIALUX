@@ -1,8 +1,9 @@
+import { API_BASE_URL } from "@/config/config";
 import { UpdateUserDTO, User } from "@/types/users/user.type"
 import { fetch } from "@tauri-apps/plugin-http"
 
 export const updateUserService = async (user: UpdateUserDTO): Promise<User> => {
-  const response = await fetch(`http://localhost:2221/api/users`,{
+  const response = await fetch(`${API_BASE_URL}users`,{
     method:"PUT",
     body: JSON.stringify(user),
     headers: {
