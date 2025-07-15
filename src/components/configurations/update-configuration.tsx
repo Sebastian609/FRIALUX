@@ -4,6 +4,33 @@ import {
 import React, { useState } from "react";
 import Button from "../shared/buttons/Button";
 import { useReadigTypes } from "@/hooks/readingType/get-all-readingType.hook";
+import * as z from "zod"; 
+
+const Configuration = z.object(
+  {
+    minValue: z.number().refine((value)=>{
+      const decimalPart = value.toString().split('.')[1];
+      if(!decimalPart) return true;
+      return decimalPart.length <=2;
+    },{
+      message: "El numero debe tener como máximo 2 decimales."
+    }),
+    maxValue: z.number().refine((value)=>{
+      const decimalPart = value.toString().split('.')[1];
+      if(!decimalPart) return true;
+      return decimalPart.length <=2;
+    },{
+      message: "El numero debe tener como máximo 2 decimales."
+    }),
+    moduleId: z.number(),
+    readingTypeId: z.number(),
+    id: z.number(),
+    isActive: z.boolean(),
+  }
+).refine((data)=>data.maxValue > data.minValue , {
+  message: "El maximo no puede ser mayor al mínimo",
+  path: ["maxValue"]
+})
 
 export interface UpdateConfigurationProps {
   configuration: UpdateConfigurationTemplate;
@@ -22,13 +49,11 @@ export default function UpdateConfiguration({
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    const { name, value, type } = e.target;
+    const { name, value } = e.target;
+    
     setConfig((prev) => ({
       ...prev,
-      [name]:
-        type === "number" || name === "readingTypeId" || name === "minValue" || name === "maxValue" 
-          ? Number(value) || 0 
-          : value,
+      [name]: value
     }));
   };
 
@@ -104,7 +129,7 @@ export default function UpdateConfiguration({
           type="number"
           name="minValue"
           id="minValue"
-          value={config.minValue || ''}
+          value={config.minValue}
           onChange={handleChange}
           className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 shadow-sm focus:ring-blue-500 focus:border-blue-500"
           step="0.01"

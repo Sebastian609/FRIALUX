@@ -24,9 +24,9 @@ export default function CreateConfiguration({ moduleId, onSubmit }: CreateConfig
         const { name, value } = e.target;
 
         const decimalLenght = value.split(",");
-        if(decimalLenght.length>2) return
         console.log(decimalLenght.length);
         
+        if(decimalLenght.length>2) return
         setConfig((prev) => ({  
             ...prev,
             [name]: value
