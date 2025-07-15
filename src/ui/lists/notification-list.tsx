@@ -36,6 +36,7 @@ export function NotificationList() {
   } = usePaginateNotifications(pagintion.page, pagintion.itemsPerPage);
 
   const getNextPage = () => {
+    if (!notifications?.pagination.hasNextPage) return;
     setPagination((prev) => ({
       ...prev,
       page: prev.page + 1,
@@ -43,7 +44,7 @@ export function NotificationList() {
   };
 
   const getBackPage = () => {
-    if (pagintion.page == 1) return;
+    if (!notifications?.pagination.hasPreviousPage) return;
     setPagination((prev) => ({
       ...prev,
       page: prev.page - 1,
@@ -75,6 +76,7 @@ export function NotificationList() {
             onClick={getBackPage}
             variant="ghost"
             leftIcon={ArrowLeftIcon}
+            disabled={!notifications?.pagination.hasPreviousPage}
           >
             back
           </Button>
@@ -83,6 +85,7 @@ export function NotificationList() {
             variant="ghost"
             type="button"
             leftIcon={ArrowRightIcon}
+            disabled={!notifications?.pagination.hasNextPage}
           >
             next
           </Button>

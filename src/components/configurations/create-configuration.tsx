@@ -21,15 +21,43 @@ export default function CreateConfiguration({ moduleId, onSubmit }: CreateConfig
        const { data } = useReadigTypes()
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const { name, value, type } = e.target;
-        setConfig((prev) => ({
+        const { name, value } = e.target;
+
+        const decimalLenght = value.split(",");
+        if(decimalLenght.length>2) return
+        console.log(decimalLenght.length);
+        
+        setConfig((prev) => ({  
             ...prev,
-            [name]: type === "number" || name === "readingTypeId" ? Number(value) : value,
+            [name]: value
         }));
     };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        
+        // Validar que los campos no estén vacíos
+        if (config.minValue === null || config.minValue === undefined) {
+            alert('El valor mínimo es requerido');
+            return;
+        }
+        
+        if (config.maxValue === null || config.maxValue === undefined) {
+            alert('El valor máximo es requerido');
+            return;
+        }
+        
+        if (!config.readingTypeId) {
+            alert('El tipo de lectura es requerido');
+            return;
+        }
+        
+        // Validar que el valor máximo sea mayor que el mínimo
+        if (config.maxValue <= config.minValue) {
+            alert('El valor máximo debe ser mayor que el valor mínimo');
+            return;
+        }
+        
         onSubmit(config);
     };
 
@@ -50,6 +78,8 @@ export default function CreateConfiguration({ moduleId, onSubmit }: CreateConfig
                     value={config.readingTypeId}
                     onChange={handleChange}
                     className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                    required
+                    
                 >
                     {data && data.map((type) => (
                         <option key={type.id} value={type.id}>
@@ -70,6 +100,8 @@ export default function CreateConfiguration({ moduleId, onSubmit }: CreateConfig
                     value={config.minValue}
                     onChange={handleChange}
                     className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                    step="0.01"
+                    required
                 />
             </div>
 
@@ -84,10 +116,11 @@ export default function CreateConfiguration({ moduleId, onSubmit }: CreateConfig
                     value={config.maxValue}
                     onChange={handleChange}
                     className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                    step="0.01"
+                    required
                 />
             </div>
-
-            {/* Campo oculto del moduleId */}
+                    
             <input type="hidden" name="moduleId" value={config.moduleId} />
 
             <div className="pt-4">

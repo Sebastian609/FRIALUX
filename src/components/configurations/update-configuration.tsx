@@ -26,12 +26,37 @@ export default function UpdateConfiguration({
     setConfig((prev) => ({
       ...prev,
       [name]:
-        type === "number" || name === "readingTypeId" ? Number(value) : value,
+        type === "number" || name === "readingTypeId" || name === "minValue" || name === "maxValue" 
+          ? Number(value) || 0 
+          : value,
     }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validar que los campos no estén vacíos
+    if (config.minValue === null || config.minValue === undefined) {
+      alert('El valor mínimo es requerido');
+      return;
+    }
+    
+    if (config.maxValue === null || config.maxValue === undefined) {
+      alert('El valor máximo es requerido');
+      return;
+    }
+    
+    if (!config.readingTypeId) {
+      alert('El tipo de lectura es requerido');
+      return;
+    }
+    
+    // Validar que el valor máximo sea mayor que el mínimo
+    if (config.maxValue <= config.minValue) {
+      alert('El valor máximo debe ser mayor que el valor mínimo');
+      return;
+    }
+    
     onSubmit(config);
   };
 
@@ -41,7 +66,7 @@ export default function UpdateConfiguration({
       className="max-w-md mx-auto rounded-lg space-y-4"
     >
       <h2 className="text-lg font-semibold text-gray-800">
-        Crear Configuración
+        Actualizar Configuración
       </h2>
 
       <div>
@@ -57,6 +82,7 @@ export default function UpdateConfiguration({
           value={config.readingTypeId}
           onChange={handleChange}
           className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+          required
         >
           {data &&
             data.map((type) => (
@@ -78,9 +104,11 @@ export default function UpdateConfiguration({
           type="number"
           name="minValue"
           id="minValue"
-          value={config.minValue}
+          value={config.minValue || ''}
           onChange={handleChange}
           className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+          step="0.01"
+          required
         />
       </div>
 
@@ -95,9 +123,11 @@ export default function UpdateConfiguration({
           type="number"
           name="maxValue"
           id="maxValue"
-          value={config.maxValue}
+          value={config.maxValue || ''}
           onChange={handleChange}
           className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+          step="0.01"
+          required
         />
       </div>
 
