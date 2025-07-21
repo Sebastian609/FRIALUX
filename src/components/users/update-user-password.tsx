@@ -4,25 +4,41 @@ import { UpdatePasswordDTO } from "@/types/users/user.type";
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment, useState } from "react";
 import toast from "react-hot-toast";
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import * as z from "zod"
+
+const UpdatePasswordSchema = z.object({
+    password: z.string().min(8, "La contraseña debe tener al menos 8 caracteres"),
+})
+type UpdatePasswordType = z.infer<typeof UpdatePasswordSchema>
 
 export default function UpdateUserPassword() {
     const { userId, updatePassword, closeUpdatePassword } = useUserStore();
-    const [password, setPassword] = useState<string>("");
     const { mutate } = useUpdatePasswordUser();
+
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+        reset,
+    } = useForm<UpdatePasswordType>({
+        resolver: zodResolver(UpdatePasswordSchema),
+        defaultValues: { password: "" },
+    })
+
     if (!userId) return null;
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-
+    const submit = (data: UpdatePasswordType) => {
         const body: UpdatePasswordDTO = {
             id: userId,
-            password,
+            password: data.password,
         };
 
         mutate(body, {
             onSuccess: () => {
                 closeUpdatePassword();
-                setPassword("");
+                reset();
                 toast.success("Contraseña actualizada correctamente");
             },
             onError: (error) => {
@@ -69,15 +85,15 @@ export default function UpdateUserPassword() {
                                 símbolos.
                             </Dialog.Description>
 
-                            <form onSubmit={handleSubmit} className="mt-4 space-y-4">
+                            <form onSubmit={handleSubmit(submit)} className="mt-4 space-y-4">
                                 <input
                                     type="password"
-                                    onChange={(e) => setPassword(e.target.value)}
+                                    {...register("password")}
                                     required
-                                    value={password}
                                     placeholder="Nueva contraseña"
                                     className="w-full px-4 py-2 border border-gray-300 rounded-md"
                                 />
+                                {errors.password && <p className="text-red-600 text-xs mt-1">{errors.password.message}</p>}
 
                                 <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
                                     <button

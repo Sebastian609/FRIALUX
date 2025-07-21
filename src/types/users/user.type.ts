@@ -26,3 +26,8 @@ export type UpdatePasswordDTO = {
     password: string,
     id: number
 }
+
+export type LoginUserDTO = {
+    username: string;
+    password: string;
+}

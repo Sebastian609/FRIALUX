@@ -1,69 +1,84 @@
 import { SaveConfigurationTemplate } from "@/types/configuration/configuration.type";
-import React, { useState } from "react";
+import React from "react";
 import Button from "../shared/buttons/Button";
 import { useReadigTypes } from "@/hooks/readingType/get-all-readingType.hook";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 
 export interface CreateConfigurationProps {
     moduleId: number;
-      onSubmit: (data: SaveConfigurationTemplate) => Promise<void>
+    onSubmit: (data: SaveConfigurationTemplate) => Promise<void>;
 }
 
+const CreateConfigurationSchema = z.object({
+    minValue: z
+        .number()
+        .refine((val) => val !== null && val !== undefined, { message: "El valor mínimo es requerido" })
+        .refine(
+            (value) => {
+                const decimalPart = value.toString().split(".")[1];
+                if (!decimalPart) return true;
+                return decimalPart.length <= 2;
+            },
+            {
+                message: "El número debe tener como máximo 2 decimales.",
+            }
+        ),
+    maxValue: z
+        .number()
+        .refine((val) => val !== null && val !== undefined, { message: "El valor máximo es requerido" })
+        .min(-100, { message: "El valor no puede ser menor a -100" })
+        .max(100, { message: "El valor no puede ser mayor a 100" })
+        .refine(
+            (value) => {
+                const decimalPart = value.toString().split(".")[1];
+                if (!decimalPart) return true;
+                return decimalPart.length <= 2;
+            },
+            {
+                message: "El número debe tener como máximo 2 decimales.",
+            }
+        ),
+    moduleId: z.number(),
+    readingTypeId: z.number().refine((val) => val !== null && val !== undefined, { message: "El tipo de lectura es requerido" }),
+}).refine((data) => data.maxValue > data.minValue, {
+    message: "El valor máximo debe ser mayor que el valor mínimo",
+    path: ["maxValue"],
+});
 
+type CreateConfigurationType = z.infer<typeof CreateConfigurationSchema>;
 
 export default function CreateConfiguration({ moduleId, onSubmit }: CreateConfigurationProps) {
-    const [config, setConfig] = useState<SaveConfigurationTemplate>({
-        minValue: 0,
-        maxValue: 0,
-        moduleId: moduleId,
-        readingTypeId: 1, // Default to Grados Centígrados
+    const { data } = useReadigTypes();
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+        setValue,
+        watch,
+    } = useForm<CreateConfigurationType>({
+        resolver: zodResolver(CreateConfigurationSchema),
+        defaultValues: {
+            minValue: 0,
+            maxValue: 0,
+            moduleId: moduleId,
+            readingTypeId: 1,
+        },
     });
 
-       const { data } = useReadigTypes()
+    // Asegura que moduleId siempre esté presente
+    React.useEffect(() => {
+        setValue("moduleId", moduleId);
+    }, [moduleId, setValue]);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const { name, value } = e.target;
-
-        const decimalLenght = value.split(",");
-        console.log(decimalLenght.length);
-        
-        if(decimalLenght.length>2) return
-        setConfig((prev) => ({  
-            ...prev,
-            [name]: value
-        }));
-    };
-
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        
-        // Validar que los campos no estén vacíos
-        if (config.minValue === null || config.minValue === undefined) {
-            alert('El valor mínimo es requerido');
-            return;
-        }
-        
-        if (config.maxValue === null || config.maxValue === undefined) {
-            alert('El valor máximo es requerido');
-            return;
-        }
-        
-        if (!config.readingTypeId) {
-            alert('El tipo de lectura es requerido');
-            return;
-        }
-        
-        // Validar que el valor máximo sea mayor que el mínimo
-        if (config.maxValue <= config.minValue) {
-            alert('El valor máximo debe ser mayor que el valor mínimo');
-            return;
-        }
-        
-        onSubmit(config);
+    const submit = async (data: CreateConfigurationType) => {
+        await onSubmit(data);
     };
 
     return (
         <form
-            onSubmit={handleSubmit}
+            onSubmit={handleSubmit(submit)}
             className="max-w-md mx-auto rounded-lg space-y-4"
         >
             <h2 className="text-lg font-semibold text-gray-800">Crear Configuración</h2>
@@ -73,13 +88,10 @@ export default function CreateConfiguration({ moduleId, onSubmit }: CreateConfig
                     Tipo de lectura:
                 </label>
                 <select
-                    name="readingTypeId"
                     id="readingTypeId"
-                    value={config.readingTypeId}
-                    onChange={handleChange}
+                    {...register("readingTypeId", { valueAsNumber: true })}
                     className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 shadow-sm focus:ring-blue-500 focus:border-blue-500"
                     required
-                    
                 >
                     {data && data.map((type) => (
                         <option key={type.id} value={type.id}>
@@ -87,6 +99,9 @@ export default function CreateConfiguration({ moduleId, onSubmit }: CreateConfig
                         </option>
                     ))}
                 </select>
+                {errors.readingTypeId && (
+                    <p className="text-red-600">{errors.readingTypeId.message}</p>
+                )}
             </div>
 
             <div>
@@ -95,14 +110,15 @@ export default function CreateConfiguration({ moduleId, onSubmit }: CreateConfig
                 </label>
                 <input
                     type="number"
-                    name="minValue"
                     id="minValue"
-                    value={config.minValue}
-                    onChange={handleChange}
-                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 shadow-sm focus:ring-blue-500 focus:border-blue-500"
                     step="0.01"
+                    {...register("minValue", { valueAsNumber: true })}
+                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 shadow-sm focus:ring-blue-500 focus:border-blue-500"
                     required
                 />
+                {errors.minValue && (
+                    <p className="text-red-600">{errors.minValue.message}</p>
+                )}
             </div>
 
             <div>
@@ -111,17 +127,18 @@ export default function CreateConfiguration({ moduleId, onSubmit }: CreateConfig
                 </label>
                 <input
                     type="number"
-                    name="maxValue"
                     id="maxValue"
-                    value={config.maxValue}
-                    onChange={handleChange}
-                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 shadow-sm focus:ring-blue-500 focus:border-blue-500"
                     step="0.01"
+                    {...register("maxValue", { valueAsNumber: true })}
+                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 shadow-sm focus:ring-blue-500 focus:border-blue-500"
                     required
                 />
+                {errors.maxValue && (
+                    <p className="text-red-600">{errors.maxValue.message}</p>
+                )}
             </div>
-                    
-            <input type="hidden" name="moduleId" value={config.moduleId} />
+
+            <input type="hidden" {...register("moduleId", { valueAsNumber: true })} />
 
             <div className="pt-4">
                 <Button type="submit" className="w-full">

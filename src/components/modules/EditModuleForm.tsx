@@ -1,6 +1,10 @@
 import { UpdateModuleTemplate } from "@/types/modules/saveModule.type";
 import { useState } from "react";
 import Button from "../shared/buttons/Button";
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import * as z from "zod"
+import React from "react";
 
 type EditModuleFormProps = {
   onSubmit: (data: UpdateModuleTemplate) => Promise<void>;
@@ -9,30 +13,43 @@ type EditModuleFormProps = {
   loading: boolean
 };
 
+const EditModuleSchema = z.object({
+  id: z.number(),
+  name: z.string().trim().min(1, "El nombre es obligatorio"),
+  webSocketRoom: z.string().trim().length(10, "WebSocket Room debe tener 10 caracteres"),
+  isActive: z.boolean(),
+})
+type EditModuleType = z.infer<typeof EditModuleSchema>
+
 export default function EditModuleForm({
   onSubmit,
   onCancel,
   formData,
   loading
 }: EditModuleFormProps) {
-  const [form, setForm] = useState<UpdateModuleTemplate>(formData);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+  } = useForm<EditModuleType>({
+    resolver: zodResolver(EditModuleSchema),
+    defaultValues: formData,
+  })
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target;
-    setForm((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
-  };
+  // Asegura que los valores booleanos y numéricos estén bien casteados
+  React.useEffect(() => {
+    setValue("id", formData.id)
+    setValue("isActive", formData.isActive)
+  }, [formData, setValue])
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    await onSubmit(form);
-  };
+  const submit = async (data: EditModuleType) => {
+    await onSubmit(data)
+  }
 
   return (
     <form
-      onSubmit={handleSubmit}
+      onSubmit={handleSubmit(submit)}
       className="max-w-md mx-auto rounded-xl space-y-4"
     >
       <div>
@@ -44,12 +61,11 @@ export default function EditModuleForm({
         </label>
         <input
           type="text"
-          name="name"
+          {...register("name")}
           id="name"
-          value={form.name}
-          onChange={handleChange}
           className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 shadow-sm focus:ring-blue-500 focus:border-blue-500"
         />
+        {errors.name && <p className="text-red-600 text-xs mt-1">{errors.name.message}</p>}
       </div>
 
       <div>
@@ -61,23 +77,20 @@ export default function EditModuleForm({
         </label>
         <input
           type="text"
-          name="webSocketRoom"
+          {...register("webSocketRoom")}
           id="webSocketRoom"
-          value={form.webSocketRoom}
-          onChange={handleChange}
           maxLength={10}
           minLength={10}
           className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 shadow-sm focus:ring-blue-500 focus:border-blue-500"
         />
+        {errors.webSocketRoom && <p className="text-red-600 text-xs mt-1">{errors.webSocketRoom.message}</p>}
       </div>
 
       <div className="flex">
         <input
           type="checkbox"
-          name="isActive"
+          {...register("isActive")}
           id="isActive"
-          checked={form.isActive}
-          onChange={handleChange}
           className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
         />
         <label htmlFor="isActive" className="text-sm text-gray-700">

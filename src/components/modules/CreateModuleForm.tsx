@@ -1,4 +1,6 @@
-import { useState } from "react"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import * as z from "zod"
 import Button from "@/components/shared/buttons/Button"
 import { Save } from "lucide-react"
 import { SaveModuleTemplate } from "@/types/modules/saveModule.type"
@@ -8,34 +10,33 @@ type CreateModuleFormProps = {
   onCancel: () => void
 }
 
+const CreateModuleSchema = z.object({
+  name: z.string().trim().min(1, "El nombre es obligatorio")
+})
+type CreateModuleType = z.infer<typeof CreateModuleSchema>
+
 export default function CreateModuleForm({
   onSubmit,
   onCancel,
 }: CreateModuleFormProps) {
-  const [name, setName] = useState("")
-  const [error, setError] = useState("")
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<CreateModuleType>({
+    resolver: zodResolver(CreateModuleSchema),
+    defaultValues: { name: "" },
+  })
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-
-    if (!name.trim()) {
-      setError("El nombre es obligatorio")
-      return
-    }
-
-    setError("")
-
-    const saveModule: SaveModuleTemplate = {
-      name: name.trim(),
-    }
-
-    await onSubmit(saveModule)
-    setName("")
+  const submit = async (data: CreateModuleType) => {
+    await onSubmit({ name: data.name.trim() })
+    reset()
   }
 
   return (
     <form
-      onSubmit={handleSubmit}
+      onSubmit={handleSubmit(submit)}
       className="p-4 bg-white rounded-lg shadow space-y-4"
     >
       <div>
@@ -45,12 +46,11 @@ export default function CreateModuleForm({
         <input
           id="name"
           type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
+          {...register("name")}
           className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm"
           placeholder="Ej: Congelador Sala A"
         />
-        {error && <p className="text-red-600 text-xs mt-1">{error}</p>}
+        {errors.name && <p className="text-red-600 text-xs mt-1">{errors.name.message}</p>}
       </div>
 
       <div className="flex justify-end gap-2">

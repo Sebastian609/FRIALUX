@@ -11,6 +11,7 @@
       "allow": [
         { "url": "http://localhost:*/*" }, 
         { "url": "http://62.171.180.36:2224/api/*" },
+        { "url": "http://localhost:2224/api/*" },
         { "url": "https://frialux-api-production.up.railway.app/api/*"}
       ],
       "deny": [{ "url": "https://private.tauri.app" }]

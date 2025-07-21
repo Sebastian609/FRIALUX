@@ -192,12 +192,11 @@ function UsersTable() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                       <CustomDropDown
-                    text="Opciones"
-                    userId={user.id} // <-- Pasa el ID del usuario
-                    onEdit={memoizedGetUser}         // <-- Pasa las funciones memoizadas
-                    onDelete={memoizedShowDelete}
-                    onChangePassword={memoizedShowUpdatePassword}
-                  />
+                        userId={user.id} // <-- Pasa el ID del usuario
+                        onEdit={memoizedGetUser}         // <-- Pasa las funciones memoizadas
+                        onDelete={memoizedShowDelete}
+                        onChangePassword={memoizedShowUpdatePassword}
+                      />
                     </td>
                   </tr>
                 )})}
