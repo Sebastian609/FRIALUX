@@ -56,7 +56,7 @@ export default function CreateConfiguration({ moduleId, onSubmit }: CreateConfig
         handleSubmit,
         formState: { errors },
         setValue,
-        watch,
+        
     } = useForm<CreateConfigurationType>({
         resolver: zodResolver(CreateConfigurationSchema),
         defaultValues: {

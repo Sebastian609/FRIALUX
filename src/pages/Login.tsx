@@ -20,7 +20,7 @@ export default function Login() {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-    reset,
+    
   } = useForm<LoginType>({
     resolver: zodResolver(LoginSchema),
     defaultValues: { username: "", password: "" },

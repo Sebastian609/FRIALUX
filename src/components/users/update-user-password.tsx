@@ -2,7 +2,7 @@ import { useUpdatePasswordUser } from "@/hooks/users/update-password-user.hook";
 import { useUserStore } from "@/stores/user-store";
 import { UpdatePasswordDTO } from "@/types/users/user.type";
 import { Dialog, Transition } from "@headlessui/react";
-import { Fragment, useState } from "react";
+import { Fragment } from "react";
 import toast from "react-hot-toast";
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"

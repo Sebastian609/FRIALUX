@@ -1,8 +1,7 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { X } from "lucide-react";
 import { useUserStore } from "@/stores/user-store";
 import { useFetchUserById } from "@/hooks/users/user.get-by-id-hook";
-import { UpdateUserDTO } from "@/types/users/user.type";
 import { useUpdateUser } from "@/hooks/users/update-user.hookt";
 import toast from "react-hot-toast";
 import { useForm } from "react-hook-form"

@@ -1,10 +1,8 @@
-import type React from "react";
 
 import { PlusIcon, X } from "lucide-react";
 import { useUserStore } from "@/stores/user-store";
 import { useCreateUser } from "@/hooks/users/user.save-hook";
 import toast from "react-hot-toast";
-import { SaveUserTemplate } from "@/types/users/saveUser.type";
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
@@ -26,9 +24,7 @@ export default function SaveUser() {
     register,
     handleSubmit,
     formState: { errors },
-    reset,
-    setValue,
-    watch,
+    reset
   } = useForm<SaveUserType>({
     resolver: zodResolver(SaveUserSchema),
     defaultValues: {
