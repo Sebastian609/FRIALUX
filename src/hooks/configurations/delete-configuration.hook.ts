@@ -15,7 +15,7 @@ export function useDeleteConfiguration() {
 const post = async (
   configurationId: number
 ): Promise<void> => {
-  const response = await fetch(`${API_BASE_URL}/api/configurations/${configurationId}`, {
+  const response = await fetch(`${API_BASE_URL}/configurations/${configurationId}`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
